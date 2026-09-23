@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #161b22;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #58a6ff;
+        }
+
+        .name-setup {
+            background-color: #161b22;
+            padding: 20px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .name-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .name-input-group label {
+            min-width: 70px;
+            font-size: 14px;
+        }
+
+        .name-input-group input {
+            flex: 1;
+            padding: 8px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 70%;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.person1 {
+            align-self: flex-start;
+        }
+
+        .message.person2 {
+            align-self: flex-end;
+        }
+
+        .message-header {
+            font-size: 12px;
+            margin-bottom: 4px;
+            color: #8b949e;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+        }
+
+        .person1 .message-bubble {
+            background-color: #21262d;
+            border-bottom-left-radius: 4px;
+        }
+
+        .person2 .message-bubble {
+            background-color: #1f6feb;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-footer {
+            font-size: 11px;
+            margin-top: 4px;
+            color: #6e7681;
+            display: flex;
+            gap: 8px;
+        }
+
+        .message.person2 .message-footer {
+            justify-content: flex-end;
+        }
+
+        .input-area {
+            background-color: #161b22;
+            padding: 15px;
+            border-top: 1px solid #30363d;
+            display: flex;
+            gap: 10px;
+        }
+
+        .sender-select {
+            padding: 10px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            color: #c9d1d9;
+            font-size: 14px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .send-btn {
+            padding: 10px 20px;
+            background-color: #238636;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .send-btn:hover {
+            background-color: #2ea043;
+        }
+
+        .send-btn:active {
+            background-color: #1a7f37;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💬 Dark Mode Chat</h1>
+    </div>
+
+    <div class="name-setup">
+        <div class="name-input-group">
+            <label>Person 1:</label>
+            <input type="text" id="person1Name" placeholder="Enter name for Person 1" value="Alex">
+        </div>
+        <div class="name-input-group">
+            <label>Person 2:</label>
+            <input type="text" id="person2Name" placeholder="Enter name for Person 2" value="Jordan">
+        </div>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <!-- Messages will appear here -->
+    </div>
+
+    <div class="input-area">
+        <select class="sender-select" id="senderSelect">
+            <option value="person1">Person 1</option>
+            <option value="person2">Person 2</option>
+        </select>
+        <input type="text" class="message-input" id="messageInput" placeholder="Type a message...">
+        <button class="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+
+    <script>
+        // Allow sending message with Enter key
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            
+            if (messageText === '') return;
+
+            const senderSelect = document.getElementById('senderSelect');
+            const sender = senderSelect.value;
+            
+            const person1Name = document.getElementById('person1Name').value || 'Person 1';
+            const person2Name = document.getElementById('person2Name').value || 'Person 2';
+            
+            const senderName = sender === 'person1' ? person1Name : person2Name;
+            
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Create message element
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">${senderName}</div>
+                <div class="message-bubble">${messageText}</div>
+                <div class="message-footer">
+                    <span>${timeString}</span>
+                    <span>Read</span>
+                </div>
+            `;
+            
+            chatContainer.appendChild(messageDiv);
+            
+            // Clear input and scroll to bottom
+            messageInput.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
